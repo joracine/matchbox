@@ -54,6 +54,17 @@ let Board = /** @class */ (() => {
             return move.side;
         }
         /**
+         * Returns all free spots on the board.
+         * @return Array of positions which are free.
+         */
+        getAllFree() {
+            let allSpots = Array.from({ length: 9 }, (value, index) => index);
+            let usedSpots = [];
+            this.moves.map((move, index) => { usedSpots.push(index); });
+            let freeSpots = allSpots.filter(address => !usedSpots.includes(address));
+            return Array.from(freeSpots, address => Position_1.Position.createFromAddress(address));
+        }
+        /**
         * Checks if there's a victor for the current board, and if so, whether it's X or O that won.
         * @return X_SIDE = X side won, O_SIDE = O side won, undefined = no victor yet, null = game is a draw.
         */
