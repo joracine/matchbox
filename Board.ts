@@ -3,14 +3,12 @@ import { Position } from "./Position";
 import { Move, Side } from "./Move";
 
 export class Board {
-  static const EMPTY_BOARD:Side[][] = [
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
-  ];
-
   moves = new Array<Move>();
-  board = Board.EMPTY_BOARD;
+  board = new Array<Array<Side>>(
+    [Side.UNKNOWN, Side.UNKNOWN, Side.UNKNOWN],
+    [Side.UNKNOWN, Side.UNKNOWN, Side.UNKNOWN],
+    [Side.UNKNOWN, Side.UNKNOWN, Side.UNKNOWN],
+  );
 
   static createFromMove(move:Move):Board {
     let board = new Board();
@@ -56,18 +54,16 @@ export class Board {
   * @return          true = position is free, false = position is filled.
   */
   isFree(position:Position):boolean {
-    return this.board[position.row][position.col] === undefined;
+    return this.board[position.row][position.col] == Side.UNKNOWN;
   }
 
   /**
    * Returns which side has played the given position.
    * @param  position Position on the board.
-   * @return          X_SIDE = X played this position, O_SIDE = O played this position, null = this position is free.
+   * @return          X = X played this position, O = O played this position,UNKNOWN = psition hasn't been played.
    */
-  getSide(position:Position):Side {
+  getSide(position:Position):(Side) {
     let side = this.board[position.row][position.col];
-    if (side === undefined)
-      return null;
     return side;
   }
 
@@ -76,11 +72,8 @@ export class Board {
    * @return Array of positions which are free.
    */
   getAllFree():Position[] {
-    let allSpots:number[] = Array.from({length: 9}, (value, index) => index);
-    let usedSpots:number[] = Array.from(this.board.flat(), {value, index} =>
-      if (value !== undefined)
-        return index;
-    );
+    let allSpots:number[] = Array.from({length: 9}, (_value, index) => index);
+    let usedSpots:(number | undefined)[] = this.board.flat().map((value, index) => { if (value !== Side.UNKNOWN) return index; });
     let freeSpots = allSpots.filter(address => !usedSpots.includes(address));
     return Array.from(freeSpots, address => Position.createFromAddress(address));
   }
@@ -97,7 +90,7 @@ export class Board {
   * @return X_SIDE = X side won, O_SIDE = O side won, undefined = no victor yet, null = game is a draw.
   */
   checkVictor():Side {
-    let make_pos = (row:number, col:number):number => { return new Position(row, col); }; // For readability only
+    let make_pos = (row:number, col:number):Position => { return new Position(row, col); }; // For readability only
 
     const possibleVictories:Position[][] = [
       // Horizontal
@@ -113,23 +106,23 @@ export class Board {
       [ make_pos(0,2), make_pos(1,1), make_pos(2,0) ],
     ];
 
-    const VICTOR_IS_X:string = Side.SIDE_X + Side.SIDE_X + Side.SIDE_X;
-    const VICTOR_IS_O:string = Side.SIDE_O + Side.SIDE_O + Side.SIDE_O;
+    const VICTOR_IS_X:string = Side.X + Side.X + Side.X;
+    const VICTOR_IS_O:string = Side.O + Side.O + Side.O;
 
-    let victor:Side = null;
+    let victor:Side = Side.BOTH;
     possibleVictories.map(possibleVictory => {
-      if (victor !== null && victor !== undefined)
+      if (victor != Side.UNKNOWN && victor != Side.BOTH)
         return;
 
       let result:string = "";
       possibleVictory.map(pos => result = result + this.getSide(pos));
 
       if (result == VICTOR_IS_X)
-        victor = Side.SIDE_X;
+        victor = Side.X;
       else if (result == VICTOR_IS_O)
-        victor = Side.SIDE_O;
-      else if (result.length != 3)
-        victor = undefined;
+        victor = Side.O;
+      else if (result.lastIndexOf(Side.UNKNOWN) == -1)
+        victor = Side.UNKNOWN;
     });
     return victor;
   }
@@ -139,12 +132,7 @@ export class Board {
   */
   show():void {
     for (let row  = 0; row < 3; ++row) {
-      let displayRow = Array.from(this.board[row]);
-      for (let col = 0; col < 3; ++col) {
-        if (displayRow[col] === undefined)
-          displayRow[col] = new Position(row, col).address();
-      }
-      console.log(displayRow.join(''));
+      console.log(this.board[row].join('').replace('?', ' '));
     }
   }
 

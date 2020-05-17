@@ -3,8 +3,10 @@ import { Position } from "./Position";
 import { Board } from "./Board";
 
 export enum Side {
-  SIDE_X = 'X',
-  SIDE_O = 'O'
+  UNKNOWN = '?',
+  X = 'X',
+  O = 'O',
+  BOTH = 'O&X'
 }
 
 export class Move {
@@ -20,11 +22,11 @@ export class Move {
    * Shows the move in a board in the console.
    * @param showAddress true = show address of empty spots, false = show empty spots as empty.
    */
-  show(showAddress:boolean = true):void {
-    Board.createFromMove(this).show(showAddress);
+  show():void {
+    Board.createFromMove(this).show();
   }
 
   toString():string {
-    retrun `Move(Side, Position): ${JSON.stringify(this)}`;
+    return `Move(Side, Position): ${JSON.stringify(this)}`;
   }
 }
