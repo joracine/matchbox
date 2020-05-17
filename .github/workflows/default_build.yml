@@ -27,9 +27,9 @@ jobs:
 
     - name: Check versions
       run: |
-        node -v
-        npm -v
-        yarn -v
+        echo node.js version: `node -v`
+        echo npm version:     `npm -v`
+        echo yarn version:    `yarn -v`
 
     - name: Install dependencies
       run: yarn install
