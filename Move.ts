@@ -16,8 +16,12 @@ export class Move {
     this.position = position;
   }
 
-  show(showPos:boolean = true):void {
-    Board.createFromMove(this).show(showPos);
+  /**
+   * Shows the move in a board in the console.
+   * @param showAddress true = show address of empty spots, false = show empty spots as empty.
+   */
+  show(showAddress:boolean = true):void {
+    Board.createFromMove(this).show(showAddress);
   }
 
   toString():string {
