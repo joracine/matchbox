@@ -34,8 +34,8 @@ export class Board {
     const row = move.position.row;
     const col = move.position.col;
 
-    if (this.moves.length > 0 && this.moves.slice(-1).side == move.side) {
-      console.error("Invalid move: Trying to play ${move.side} but it's ${move.side}'s turn!'");
+    if (this.moves.length > 0 && this.moves[this.moves.length - 1].side == move.side) {
+      console.error("Invalid move: Trying to play ${move.side} but it's not ${move.side}'s turn!'");
       return false;
     }
 
