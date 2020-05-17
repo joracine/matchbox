@@ -1,12 +1,12 @@
-import { _validator } from "./_validator";
+import { Validator } from "./Validator";
 
 export class Position {
   row:number;
   col:number;
 
   constructor(row:number, col:number) {
-    _validator._checkRangeInclusive(0, 2, row);
-    _validator._checkRangeInclusive(0, 2, col);
+    Validator._checkRangeInclusive(0, 2, row);
+    Validator._checkRangeInclusive(0, 2, col);
 
     this.row = row;
     this.col = col;

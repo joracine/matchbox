@@ -1,4 +1,3 @@
-import { _validator } from "./_validator";
 import { Position } from "./Position";
 import { Board } from "./Board";
 

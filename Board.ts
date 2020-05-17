@@ -1,4 +1,4 @@
-import { _validator } from "./_validator";
+import { Validator } from "./Validator";
 import { Position } from "./Position";
 import { Move, Side } from "./Move";
 
@@ -12,14 +12,14 @@ export class Board {
 
   static createFromMove(move:Move):Board {
     let board = new Board();
-     _validator._checkTrue(board.addMove(move), `Failed to add move ${JSON.stringify(move)} position already filled.`);
+     Validator._checkTrue(board.addMove(move), `Failed to add move ${JSON.stringify(move)} position already filled.`);
     return board;
   }
 
   static createFromMoves(moves:Move[]):Board {
-    _validator._checkArraySize(0, 9, moves);
+    Validator._checkArraySize(0, 9, moves);
     let board = new Board();
-    moves.map(move => _validator._checkTrue(board.addMove(move), `Failed to add move ${JSON.stringify(move)} position already filled.`));
+    moves.map(move => Validator._checkTrue(board.addMove(move), `Failed to add move ${JSON.stringify(move)} position already filled.`));
     return board;
   }
 
@@ -73,7 +73,7 @@ export class Board {
    */
   getAllFree():Position[] {
     let allSpots:number[] = Array.from({length: 9}, (_value, index) => index);
-    let usedSpots:(number | undefined)[] = this.board.flat().map((value, index) => { if (value !== Side.UNKNOWN) return index; });
+    let usedSpots:(number | undefined)[] = this.board.flat().map((value:Side, index:number) => { if (value !== Side.UNKNOWN) return index; return undefined;});
     let freeSpots = allSpots.filter(address => !usedSpots.includes(address));
     return Array.from(freeSpots, address => Position.createFromAddress(address));
   }
@@ -81,8 +81,9 @@ export class Board {
   /**
    * Checks that the board is valid (i.e. moves have been taken in the right order). Throws an exceptions if not.
    */
-  checkValid():void {
-
+  checkValid():boolean {
+    //TBA
+    return true;
   }
 
   /**
@@ -116,12 +117,11 @@ export class Board {
 
       let result:string = "";
       possibleVictory.map(pos => result = result + this.getSide(pos));
-
       if (result == VICTOR_IS_X)
         victor = Side.X;
       else if (result == VICTOR_IS_O)
         victor = Side.O;
-      else if (result.lastIndexOf(Side.UNKNOWN) == -1)
+      else if (result.lastIndexOf(Side.UNKNOWN) != -1)
         victor = Side.UNKNOWN;
     });
     return victor;
