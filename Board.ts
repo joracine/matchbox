@@ -3,21 +3,18 @@ import { Position } from "./Position";
 import { Move, Side } from "./Move";
 
 export class Board {
-  static const EMPTY_BOARD:string =
-    "+-----+\n" +
-    "|0|1|2|\n" +
-    "+-+-+-+\n" +
-    "|3|4|5|\n" +
-    "+-+-+-+\n" +
-    "|6|7|8|\n" +
-    "+-----+\n";
+  static const EMPTY_BOARD:Side[][] = [
+    [undefined, undefined, undefined],
+    [undefined, undefined, undefined],
+    [undefined, undefined, undefined],
+  ];
 
-  moves = new Array<Move>(9);
+  moves = new Array<Move>();
   board = Board.EMPTY_BOARD;
 
   static createFromMove(move:Move):Board {
     let board = new Board();
-    board.addMove(move);
+     _validator._checkTrue(board.addMove(move), `Failed to add move ${JSON.stringify(move)} position already filled.`);
     return board;
   }
 
@@ -34,10 +31,22 @@ export class Board {
   * @return      true = move was added, false = move was invalid and was not added.
   */
   addMove(move:Move):boolean {
-    if (this.moves[move.position.address()] !== undefined)
+    const row = move.position.row;
+    const col = move.position.col;
+
+    if (this.moves.length > 0 && this.moves.slice(-1).side == move.side) {
+      console.error("Invalid move: Trying to play ${move.side} but it's ${move.side}'s turn!'");
       return false;
-    this.moves[move.position.address()] = move;
-    this.board = this.board.replace(move.position.address().toString(), move.side.toString()));
+    }
+
+    if (this.board[row][col] !== undefined) {
+      console.error(`Invalid move: The location ${row},${col} has already been played.`);
+      return false;
+    }
+
+    this.moves.push(move);
+    this.board[row][col] = move.side;
+    console.info(`Move played: ${move.side} played at ${row},${col}.`);
     return true;
   }
 
@@ -47,7 +56,7 @@ export class Board {
   * @return          true = position is free, false = position is filled.
   */
   isFree(position:Position):boolean {
-    return this.moves[position.address()] === undefined;
+    return this.board[position.row][position.col] === undefined;
   }
 
   /**
@@ -56,10 +65,10 @@ export class Board {
    * @return          X_SIDE = X played this position, O_SIDE = O played this position, null = this position is free.
    */
   getSide(position:Position):Side {
-    let move = this.moves[position.address()];
-    if (move === undefined)
+    let side = this.board[position.row][position.col];
+    if (side === undefined)
       return null;
-    return move.side;
+    return side;
   }
 
   /**
@@ -68,10 +77,19 @@ export class Board {
    */
   getAllFree():Position[] {
     let allSpots:number[] = Array.from({length: 9}, (value, index) => index);
-    let usedSpots:number[] = [];
-    this.moves.map((move, index) => { usedSpots.push(index); });
+    let usedSpots:number[] = Array.from(this.board.flat(), {value, index} =>
+      if (value !== undefined)
+        return index;
+    );
     let freeSpots = allSpots.filter(address => !usedSpots.includes(address));
     return Array.from(freeSpots, address => Position.createFromAddress(address));
+  }
+
+  /**
+   * Checks that the board is valid (i.e. moves have been taken in the right order). Throws an exceptions if not.
+   */
+  checkValid():void {
+
   }
 
   /**
@@ -118,13 +136,15 @@ export class Board {
 
   /**
   * Shows the current board in the console.
-  * @param showAddress true = show address of empty spots, false = show empty spots as empty.
   */
-  show(showAddress:boolean = true):void {
-    if (showAddress == true) {
-      console.log(this.board);
-    } else {
-      console.log(this.board.replace(/[0-9]/gi, ' '));
+  show():void {
+    for (let row  = 0; row < 3; ++row) {
+      let displayRow = Array.from(this.board[row]);
+      for (let col = 0; col < 3; ++col) {
+        if (displayRow[col] === undefined)
+          displayRow[col] = new Position(row, col).address();
+      }
+      console.log(displayRow.join(''));
     }
   }
 

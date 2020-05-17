@@ -7,12 +7,12 @@ const Move_1 = require("./Move");
 let Board = /** @class */ (() => {
     class Board {
         constructor() {
-            this.moves = new Array(9);
+            this.moves = new Array();
             this.board = Board.EMPTY_BOARD;
         }
         static createFromMove(move) {
             let board = new Board();
-            board.addMove(move);
+            _validator_1._validator._checkTrue(board.addMove(move), `Failed to add move ${JSON.stringify(move)} position already filled.`);
             return board;
         }
         static createFromMoves(moves) {
@@ -27,11 +27,19 @@ let Board = /** @class */ (() => {
         * @return      true = move was added, false = move was invalid and was not added.
         */
         addMove(move) {
-            if (this.moves[move.position.address()] !== undefined)
+            const row = move.position.row;
+            const col = move.position.col;
+            if (this.moves.length > 0 && this.moves.slice(-1).side == move.side) {
+                console.error("Invalid move: Trying to play ${move.side} but it's ${move.side}'s turn!'");
                 return false;
-            this.moves[move.position.address()] = move;
-            this.board = this.board.replace(move.position.address().toString(), move.side.toString());
-            ;
+            }
+            if (this.board[row][col] !== undefined) {
+                console.error(`Invalid move: The location ${row},${col} has already been played.`);
+                return false;
+            }
+            this.moves.push(move);
+            this.board[row][col] = move.side;
+            console.info(`Move played: ${move.side} played at ${row},${col}.`);
             return true;
         }
         /**
@@ -40,7 +48,7 @@ let Board = /** @class */ (() => {
         * @return          true = position is free, false = position is filled.
         */
         isFree(position) {
-            return this.moves[position.address()] === undefined;
+            return this.board[position.row][position.col] === undefined;
         }
         /**
          * Returns which side has played the given position.
@@ -48,10 +56,10 @@ let Board = /** @class */ (() => {
          * @return          X_SIDE = X played this position, O_SIDE = O played this position, null = this position is free.
          */
         getSide(position) {
-            let move = this.moves[position.address()];
-            if (move === undefined)
+            let side = this.board[position.row][position.col];
+            if (side === undefined)
                 return null;
-            return move.side;
+            return side;
         }
         /**
          * Returns all free spots on the board.
@@ -59,10 +67,17 @@ let Board = /** @class */ (() => {
          */
         getAllFree() {
             let allSpots = Array.from({ length: 9 }, (value, index) => index);
-            let usedSpots = [];
-            this.moves.map((move, index) => { usedSpots.push(index); });
+            let usedSpots = Array.from(this.board.flat(), { value, index });
+            if (value !== undefined)
+                return index;
+            ;
             let freeSpots = allSpots.filter(address => !usedSpots.includes(address));
             return Array.from(freeSpots, address => Position_1.Position.createFromAddress(address));
+        }
+        /**
+         * Checks that the board is valid (i.e. moves have been taken in the right order). Throws an exceptions if not.
+         */
+        checkValid() {
         }
         /**
         * Checks if there's a victor for the current board, and if so, whether it's X or O that won.
@@ -102,27 +117,26 @@ let Board = /** @class */ (() => {
         }
         /**
         * Shows the current board in the console.
-        * @param showAddress true = show address of empty spots, false = show empty spots as empty.
         */
-        show(showAddress = true) {
-            if (showAddress == true) {
-                console.log(this.board);
-            }
-            else {
-                console.log(this.board.replace(/[0-9]/gi, ' '));
+        show() {
+            for (let row = 0; row < 3; ++row) {
+                let displayRow = Array.from(this.board[row]);
+                for (let col = 0; col < 3; ++col) {
+                    if (displayRow[col] === undefined)
+                        displayRow[col] = new Position_1.Position(row, col).address();
+                }
+                console.log(displayRow.join(''));
             }
         }
         toString() {
             return `Board(): ${JSON.stringify(this)}`;
         }
     }
-    Board.EMPTY_BOARD = "+-----+\n" +
-        "|0|1|2|\n" +
-        "+-+-+-+\n" +
-        "|3|4|5|\n" +
-        "+-+-+-+\n" +
-        "|6|7|8|\n" +
-        "+-----+\n";
+    Board.EMPTY_BOARD = [
+        [undefined, undefined, undefined],
+        [undefined, undefined, undefined],
+        [undefined, undefined, undefined],
+    ];
     return Board;
 })();
 exports.Board = Board;
