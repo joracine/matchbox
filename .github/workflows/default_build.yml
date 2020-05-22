@@ -17,15 +17,6 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    env:
-      OUTPUT_DIR: ./dist
-      RESOURCES_DIR: ${OUTPUT}/resources
-      PACKAGE_DIR: ./package
-      BUILD_SCRIPTS_DIR: ${RESOURCES_DIR}
-      BUILD_INFO_TEMPLATE: ${BUILD_SCRIPTS_DIR}/buildinfo_template.yml
-      BUILD_INFO_FILE: ${OUTPUT_DIR}/buildinfo.yml
-      PACKAGE_FILE: ${PACKAGE_DIR}/build_$GITHUB_RUN_NUMBER.tar.gz
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -36,6 +27,15 @@ jobs:
       mkdir ${OUTPUT_DIR}
       mkdir ${RESOURCES_DIR}
       mkdir ${PACKAGE_DIR}
+    env:
+      OUTPUT_DIR: ./dist
+      RESOURCES_DIR: ${OUTPUT}/resources
+      PACKAGE_DIR: ./package
+      BUILD_SCRIPTS_DIR: ${RESOURCES_DIR}
+      BUILD_INFO_TEMPLATE: ${BUILD_SCRIPTS_DIR}/buildinfo_template.yml
+      BUILD_INFO_FILE: ${OUTPUT_DIR}/buildinfo.yml
+      PACKAGE_FILE: ${PACKAGE_DIR}/build_$GITHUB_RUN_NUMBER.tar.gz
+
 
     - name: Generating build info
       run: |
