@@ -16,7 +16,7 @@ jobs:
     OUTPUT_DIR: ./dist
     RESOURCES_DIR: ${OUTPUT}/resources
     PACKAGE_DIR: ./package
-    BUILD_SCRIPTS_DIR: ./.github/workflows
+    BUILD_SCRIPTS_DIR: ${RESOURCES_DIR}
     BUILD_INFO_TEMPLATE: ${BUILD_SCRIPTS_DIR}/buildinfo_template.yml
     BUILD_INFO_FILE: ${OUTPUT_DIR}/buildinfo.yml
     PACKAGE_FILE: ${PACKAGE_DIR}/build_$GITHUB_RUN_NUMBER.tar.gz
