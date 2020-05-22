@@ -1,7 +1,10 @@
 {
-   "name": "matchbox",
-   "version": "0.0.1",
-   "scripts": {
-     "compile-typescript": "tsc"
-   }
- }
+  "name": "matchbox",
+  "version": "0.0.1",
+  "scripts": {
+    "compile-typescript": "tsc"
+  },
+  "dependencies": {
+    "node-typescript": "^0.1.3"
+  }
+}
