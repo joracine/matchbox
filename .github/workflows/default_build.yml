@@ -31,8 +31,9 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Prepraring for build
+    - name: Preparing for build
       run: |
+      pwd
       mkdir ${OUTPUT_DIR}
       mkdir ${RESOURCES_DIR}
       mkdir ${PACKAGE_DIR}
