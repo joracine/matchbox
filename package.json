@@ -13,7 +13,7 @@
     "url": "git@github.com:joracine/matchbox.git"
   },
   "scripts": {
-    "compile-typescript": "tsc"
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/node": ">=12.16.3",

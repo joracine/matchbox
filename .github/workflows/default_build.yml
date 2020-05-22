@@ -12,6 +12,15 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  env:
+    OUTPUT_DIR: ./dist
+    RESOURCES_DIR: ${OUTPUT}/resources
+    PACKAGE_DIR: ./package
+    BUILD_SCRIPTS_DIR: ./.github/workflows
+    BUILD_INFO_TEMPLATE: ${BUILD_SCRIPTS_DIR}/buildinfo_template.yml
+    BUILD_INFO_FILE: ${OUTPUT_DIR}/buildinfo.yml
+    PACKAGE_FILE: ${PACKAGE_DIR}/build_$GITHUB_RUN_NUMBER.tar.gz
+
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
@@ -22,14 +31,36 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Check versions
+    - name: Prepraring for build
       run: |
-        echo node.js version: `node -v`
-        echo npm version: `npm -v`
+      mkdir ${OUTPUT_DIR}
+      mkdir ${RESOURCES_DIR}
+      mkdir ${PACKAGE_DIR}
 
-    - name: Install dependencies
-      run: yarn install
+    - name: Generating build info
+      run: |
+        cp ${BUILD_INFO_TEMPLATE} ${BUILD_INFO_FILE}
+        sed -i 's/[!]NODE_VERSION[!]/`node -v`/g' ${BUILD_INFO_FILE}
+        sed -i 's/[!]NPM_VERSION[!]/`npm -v`/g' ${BUILD_INFO_FILE}
+        sed -i 's/[!]NPM_VERSION[!]/${GITHUB_SHA}/g' ${BUILD_INFO_FILE}
 
-    # Runs a set of commands using the runners shell
-    - name: Building...
-      run: npm run compile-typescript
+    - name: Building
+      run: |
+      npm run build
+
+    - name: Packaging build
+      run: |
+      tar -c ${OUTPUT_DIR}/*.js | gzip --best > ${PACKAGE_FILE}
+      cp ${BUILD_INFO_FILE} ${PACKAGE_DIR}
+
+    - name: Persist build package artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: build-package
+        path: ${PACKAGE_FILE}
+
+    - name: Persist buildinfo artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: build-package
+        path: ${BUILD_INFO_FILE}
