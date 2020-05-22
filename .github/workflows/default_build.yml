@@ -22,14 +22,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Install yarn
-      run: npm i yarn
-
     - name: Check versions
       run: |
         echo node.js version: `node -v`
-        echo npm version:     `npm -v`
-        echo yarn version:    `yarn -v`
+        echo npm version: `npm -v`
 
     - name: Install dependencies
       run: yarn install

@@ -16,7 +16,7 @@
     "compile-typescript": "tsc"
   },
   "devDependencies": {
-    "@types/node": "^12.16.3",
+    "@types/node": ">=12.16.3",
     "typescript": "^3.3.3333"
   },
   "dependencies": {
