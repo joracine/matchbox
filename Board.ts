@@ -37,7 +37,7 @@ export class Board {
       return false;
     }
 
-    if (this.board[row][col] !== undefined) {
+    if (this.board[row][col] != Side.UNKNOWN) {
       console.error(`Invalid move: The location ${row},${col} has already been played.`);
       return false;
     }
@@ -132,7 +132,7 @@ export class Board {
   */
   show():void {
     for (let row  = 0; row < 3; ++row) {
-      console.log(this.board[row].join('').replace('?', ' '));
+      console.log(this.board[row].join('').replace(/[?]/g, ' '));
     }
   }
 

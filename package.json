@@ -15,11 +15,9 @@
   "scripts": {
     "build": "tsc"
   },
-  "devDependencies": {
-    "@types/node": ">=12.16.3",
-    "typescript": "^3.3.3333"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "v8": "^0.1.0"
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.3"
   }
 }
